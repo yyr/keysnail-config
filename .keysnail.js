@@ -167,7 +167,7 @@ key.setGlobalKey(['C-x', 'C-t'], function (ev, arg) {
 }, 'Firebug - toggle', true);
 
 key.setGlobalKey(['C-x', 'e'], function (ev, arg) {
-  ext.exec('edit_text', arg, ev);
+    ext.exec('edit_text', arg, ev);
 }, 'edit by external editor', true);
 
 key.setGlobalKey(['C-x', 'f'], function (ev, arg) {
@@ -597,7 +597,10 @@ key.setCaretKey('M-n', function (ev) {
   command.walkInputElement(command.elementsRetrieverButton, false, true);
 }, 'Focus to the previous button');
 
-// key.setGlobalKey('M-l', function (ev) {
-//     command.focusToById("urlbar");    
-//     display.echoStatusBar("url bar!", 2000);    
-// }, 'Focus to the location bar', true);
+key.setGlobalKey('M-L', function (ev, arg) {
+    ext.exec('find-all-tab', arg, ev);
+}, 'find - find all tab', true);
+
+key.setGlobalKey(['C-x', 's'], function (ev, arg) {
+    ext.exec('find-current-tab', arg, ev);
+}, 'Find - find current tab', true);
