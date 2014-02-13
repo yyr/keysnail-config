@@ -30,6 +30,7 @@ key.suspendKey           = "<f2>";
 
 // ================================= Hooks ================================= //
 
+
 hook.setHook('KeyBoardQuit', function (aEvent) {
     if (key.currentKeySequence.length) return;
 
@@ -54,6 +55,7 @@ hook.setHook('KeyBoardQuit', function (aEvent) {
         key.generateKey(aEvent.originalTarget, KeyEvent.DOM_VK_ESCAPE, true);
     }
 });
+
 
 
 
@@ -85,6 +87,7 @@ key.setGlobalKey([['C-m'], ['M-j']], function (ev) {
 
 key.setGlobalKey(['C-x', '0'], function (ev) {
   FullZoom.reset();
+  display.echoStatusBar("reset zoom!", 2000);
 }, 'Reset text size');
 
 key.setGlobalKey(['C-x', '1'], function (ev) {
@@ -103,9 +106,9 @@ key.setGlobalKey([['C-x', 't'], ['C-x', 'i']], function (ev) {
   command.focusElement(command.elementsRetrieverTextarea, 0);
 }, 'Focus to the first textarea', true);
 
-key.setGlobalKey(['C-x', 's'], function (ev) {
-  command.focusElement(command.elementsRetrieverButton, 0);
-}, 'Focus to the first button', true);
+key.setGlobalKey([['C-x', 's'], ['C-c', 's']], function (ev, arg) {
+    ext.exec('find-current-tab', arg, ev);
+}, 'Find - find current tab', true);
 
 key.setGlobalKey([['C-x', 'k'], ['M-.']], function (ev) {
   BrowserCloseTabOrWindow();
@@ -122,16 +125,6 @@ key.setGlobalKey(['C-x', 'u'], function (ev) {
 key.setGlobalKey(['C-x', 'C-c'], function (ev) {
   goQuitApplication();
 }, 'Exit Firefox', true);
-
-key.setGlobalKey(['C-x', 'o'], function (ev) {
-  userscript.reload();  
-  var displayTime = 5000
-  var func = function(){
-    var collection = ["dylan", "dog", "mag"];
-    return _.first(collection, [1]);
-  }
-  display.echoStatusBar(func(),displayTime);
-});
 
 key.setGlobalKey(['C-x', 'C-f'], function (ev) {
   BrowserOpenFileWindow();
@@ -186,36 +179,9 @@ key.setGlobalKey(['C-x', 'b'], function (ev, arg) {
   ext.exec('tanything', arg, ev);
 }, 'view all tabs ', true);
 
-key.setGlobalKey(['C-x', '='], function (ev) {
-  FullZoom.enlarge();
-}, 'Enlarge text size');
-
-key.setGlobalKey(['C-x', '-'], function (ev) {
-  FullZoom.reduce();
-}, 'Reduce text size');
-
-key.setGlobalKey('M-w', function (ev) {
-  command.copyRegion(ev);
-}, 'Copy selected text', true);
-
-key.setGlobalKey('C-r', function (ev) {
-  command.iSearchBackward(ev);
-}, 'Emacs like incremental search backward', true);
-
-key.setGlobalKey('C-s', function (ev) {
-  command.iSearchForward(ev);
-}, 'Emacs like incremental search backward', true);
-
-key.setGlobalKey('M-;', function (ev) {
-  getBrowser().mTabContainer.advanceSelectedTab(1, true);
-  _content.focus();
-  //dylan
-}, 'Select next tab');
-
-key.setGlobalKey('M-h', function (ev) {
-  getBrowser().mTabContainer.advanceSelectedTab(-1, true);
-  _content.focus();
-}, 'Select previous tab');
+key.setGlobalKey(['C-x', 'y'], function (ev, arg) {
+    ext.exec('show-kill-ring-and-select-text-to-paste', arg, ev);
+}, 'Show kill-ring and select text to paste', true);
 
 key.setGlobalKey(['C-c', 'C-c', 'C-v'], function (ev) {
   toJavaScriptConsole();
@@ -230,6 +196,27 @@ key.setGlobalKey(['C-c', 'i'], function (ev, arg) {
   util.setBoolPref("accessibility.browsewithcaret", !util.getBoolPref("accessibility.browsewithcaret"));
 }, 'Enter caret mode');
 
+key.setGlobalKey('M-w', function (ev) {
+  command.copyRegion(ev);
+}, 'Copy selected text', true);
+
+key.setGlobalKey('C-r', function (ev) {
+  command.iSearchBackward(ev);
+}, 'Emacs like incremental search backward', true);
+
+key.setGlobalKey('C-s', function (ev) {
+  command.iSearchForward(ev);
+}, 'Emacs like incremental search backward', true);
+
+key.setGlobalKey('M-;', function (ev) {  
+  getBrowser().mTabContainer.advanceSelectedTab(1, true);  
+  _content.focus();  
+}, 'Select next tab');
+
+key.setGlobalKey('C-9', function (ev) {  
+  _content.focus();
+}, 'focus on page\'s content');
+
 key.setGlobalKey('M-o', function (ev, arg) {
   ext.exec('hok-start-foreground-mode', arg, ev);
 }, 'Start Hit a Hint foreground mode', true);
@@ -241,10 +228,6 @@ key.setGlobalKey('M-\'', function (ev, arg) {
 key.setGlobalKey('M-"', function (ev, arg) {
   ext.exec('hok-start-continuous-mode', arg, ev);
 }, 'Start Hit a Hint continuous mode', true);
-
-key.setGlobalKey('M-i', function (ev, arg) {
-  ext.exec('hok-yank-foreground-mode', arg, ev);
-}, 'Start Hit a Yank foreground mode', true);
 
 key.setGlobalKey('C-,', function (ev) {
   BrowserForward();
@@ -271,6 +254,28 @@ key.setGlobalKey('M-<right>', function (ev) {
 key.setGlobalKey('M-d', function (ev) {
   command.deleteForwardWord(ev);
 }, 'Delete forward word');
+
+key.setGlobalKey('M-L', function (ev, arg) {
+    ext.exec('find-all-tab', arg, ev);
+}, 'find - find all tab', true);
+
+key.setGlobalKey('M-u', function (ev) {
+    // original code by gomita-san
+    var uri = getBrowser().currentURI;
+    if (uri.path == "/") return;
+    var pathList = uri.path.split("/");
+    if (!pathList.pop()) pathList.pop();
+    loadURI(uri.prePath + pathList.join("/") + "/");
+}, 'Go upper directory');
+
+key.setGlobalKey('C-4', function (ev, arg) {
+    var toolbox = document.getElementById("navigator-toolbox");
+    toolbox.hidden = !toolbox.hidden;
+    if (arg || !toolbox.hidden) {
+        var statusbar = document.getElementById("status-bar");
+        statusbar.hidden = toolbox.hidden;
+    }
+}, 'Switch pseudo fullscreen', true);
 
 key.setViewKey([['C-n'], ['j']], function (ev) {
   key.generateKey(ev.originalTarget, KeyEvent.DOM_VK_DOWN, true);
@@ -392,10 +397,10 @@ key.setEditKey(['C-x', 'v'], function (ev) {
 }, 'Show kill-ring and select text to paste', true);
 
 key.setEditKey(['C-x', 'C-k'], function (ev) {
-  goDoCommand("cmd_copy");
-  goDoCommand("cmd_delete");
-  command.resetMark(ev);
-}, 'Cut current region', true);
+    goDoCommand("cmd_copy");
+    goDoCommand("cmd_delete");
+    command.resetMark(ev);
+}, 'Cut current region');
 
 key.setEditKey([['C-SPC'], ['C-@']], function (ev) {
   command.setMark(ev);
@@ -404,16 +409,6 @@ key.setEditKey([['C-SPC'], ['C-@']], function (ev) {
 key.setEditKey('C-o', function (ev) {
   command.openLine(ev);
 }, 'Open line');
-
-key.setEditKey('C-/', function (ev) {
-  display.echoStatusBar("Undo!", 2000);
-  goDoCommand("cmd_undo");
-}, 'Undo');
-
-key.setEditKey('C-\\', function (ev) {
-  display.echoStatusBar("Redo!", 2000);
-  goDoCommand("cmd_redo");
-}, 'Redo');
 
 key.setEditKey('C-a', function (ev) {
   command.beginLine(ev);
@@ -463,10 +458,6 @@ key.setEditKey('C-h', function (ev) {
   goDoCommand("cmd_deleteCharBackward");
 }, 'Delete backward char');
 
-key.setEditKey([['C-<backspace>'], ['M-<delete>']], function (ev) {
-  command.deleteBackwardWord(ev);
-}, 'Delete backward word');
-
 key.setEditKey('M-u', function (ev, arg) {
   command.wordCommand(ev, arg, command.upcaseForwardWord, command.upcaseBackwardWord);
 }, 'Convert following word to upper case');
@@ -486,14 +477,6 @@ key.setEditKey('C-k', function (ev) {
 key.setEditKey('C-v', command.yank, 'Paste (Yank)');
 
 key.setEditKey('M-v', command.yankPop, 'Paste pop (Yank pop)', true);
-
-key.setEditKey('M-n', function (ev) {
-  command.walkInputElement(command.elementsRetrieverTextarea, true, true);
-}, 'Focus to the next text area');
-
-key.setEditKey('M-p', function (ev) {
-  command.walkInputElement(command.elementsRetrieverTextarea, false, true);
-}, 'Focus to the previous text area');
 
 key.setCaretKey([['C-a'], ['^']], function (ev) {
   ev.target.ksMarked ? goDoCommand("cmd_selectBeginLine") : goDoCommand("cmd_beginLine");
@@ -547,39 +530,9 @@ key.setCaretKey('K', function (ev) {
   util.getSelectionController().scrollLine(false);
 }, 'Scroll line up');
 
-key.setCaretKey(',', function (ev) {
-  util.getSelectionController().scrollHorizontal(true);
-  goDoCommand("cmd_scrollLeft");
-}, 'Scroll left');
-
-key.setCaretKey('.', function (ev) {
-  goDoCommand("cmd_scrollRight");
-  util.getSelectionController().scrollHorizontal(false);
-}, 'Scroll right');
-
-key.setCaretKey('z', function (ev) {
-  command.recenter(ev);
-}, 'Scroll to the cursor position');
-
 key.setCaretKey([['C-SPC'], ['C-@']], function (ev) {
   command.setMark(ev);
 }, 'Set the mark', true);
-
-key.setCaretKey(':', function (ev, arg) {
-  shell.input(null, arg);
-}, 'List and execute commands', true);
-
-key.setCaretKey('R', function (ev) {
-  BrowserReload();
-}, 'Reload the page', true);
-
-key.setCaretKey('B', function (ev) {
-  BrowserBack();
-}, 'Back');
-
-key.setCaretKey('F', function (ev) {
-  BrowserForward();
-}, 'Forward');
 
 key.setCaretKey(['C-x', 'h'], function (ev) {
   goDoCommand("cmd_selectAll");
@@ -597,10 +550,7 @@ key.setCaretKey('M-n', function (ev) {
   command.walkInputElement(command.elementsRetrieverButton, false, true);
 }, 'Focus to the previous button');
 
-key.setGlobalKey('M-L', function (ev, arg) {
-    ext.exec('find-all-tab', arg, ev);
-}, 'find - find all tab', true);
+key.setGlobalKey('M-e', function (ev, arg) {
+    ext.exec('hok-start-extended-mode', arg, ev);
+}, 'Start Hit a Hint extended mode', true);
 
-key.setGlobalKey(['C-x', 's'], function (ev, arg) {
-    ext.exec('find-current-tab', arg, ev);
-}, 'Find - find current tab', true);
