@@ -9,6 +9,30 @@
 
 ext.add("markdown", display.echoStatusBar("markdown-toggle: C-M", 5000), "markdown-toggle: C-M");
 
+plugins.options["bmany.default_open_type"] = "tab";
+
+plugins.options["tanything_opt.keymap"] = {
+    "C-z"   : "prompt-toggle-edit-mode",
+    "SPC"   : "prompt-next-page",
+    "b"     : "prompt-previous-page",
+    "j"     : "prompt-next-completion",
+    "k"     : "prompt-previous-completion",
+    "g"     : "prompt-beginning-of-candidates",
+    "G"     : "prompt-end-of-candidates",
+    "D"     : "prompt-cancel",
+    // Tanything specific actions
+    "O"     : "localOpen",
+    "q"     : "localClose",
+    "p"     : "localLeftclose",
+    "n"     : "localRightclose",
+    "a"     : "localAllclose",
+    "d"     : "localDomainclose",
+    "c"     : "localClipUT",
+    "C"     : "localClipU",
+    "e"     : "localMovetoend"
+};
+
+
 
 // }} ======================================================================= //
 plugins.options["hok.hint_keys"] = "uiopjkl;mn";
@@ -139,8 +163,9 @@ key.setGlobalKey(['C-x', 'C-b'], function (ev, arg) {
 }, 'bmany - List all bookmarks');
 
 key.setGlobalKey(['C-x', 'r'], function (ev) {
+  _content.focus();
   userscript.reload();
-  display.echoStatusBar("Reloaded!", 2000);
+  display.echoStatusBar("Reloaded!", 3000);
 }, 'Reload the initialization file');
 
 key.setGlobalKey(['C-x', 'p'], function (ev, arg) {
@@ -466,9 +491,9 @@ key.setEditKey('M-l', function (ev, arg) {
   command.wordCommand(ev, arg, command.downcaseForwardWord, command.downcaseBackwardWord);
 }, 'Convert following word to lower case');
 
-key.setEditKey('M-c', function (ev, arg) {
-  command.wordCommand(ev, arg, command.capitalizeForwardWord, command.capitalizeBackwardWord);
-}, 'Capitalize the following word');
+// key.setEditKey('M-c', function (ev, arg) {
+//   command.wordCommand(ev, arg, command.capitalizeForwardWord, command.capitalizeBackwardWord);
+// }, 'Capitalize the following word');
 
 key.setEditKey('C-k', function (ev) {
   command.killLine(ev);

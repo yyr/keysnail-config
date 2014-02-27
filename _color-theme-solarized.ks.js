@@ -15,22 +15,22 @@ let PLUGIN_INFO =
         style.unregister(share.colorThemeSolarized);
 
     // http://ethanschoonover.com/solarized
-    const $base03   = "#002b36";
-    const $base02   = "#073642";
-    const $base01   = "#586e75";
-    const $base00   = "#657b83";
-    const $base0    = "#839496";
-    const $base1    = "#93a1a1";
-    const $base2    = "#eee8d5";
-    const $base3    = "#fdf6e3";
-    const $yellow   = "#b58900";
-    const $orange   = "#cb4b16";
-    const $red      = "#dc322f";
-    const $magenta  = "#d33682";
-    const $violet   = "#6c71c4";
-    const $blue     = "#268bd2";
-    const $cyan     = "#2aa198";
-    const $green    = "#859900";
+  const $base03   = "#eeeeee";
+  const $base02   = "#fdf6e3";
+  const $base01   = "#00ff00";
+  const $base00   = "#657b83";
+  const $base0    = "#839496";
+  const $base1    = "#000000";
+  const $base2    = "#000000";
+  const $base3    = "#000000";
+  const $yellow   = "#b58900";
+  const $orange   = "#cb4b16";
+  const $red      = "#dc322f";
+  const $magenta  = "#d33682";
+  const $violet   = "#6c71c4";
+  const $blue     = "#268bd2";
+  const $cyan     = "#268bd2";
+  const $green    = "#859900";
 
     function arrange(seed) {
         let colors = [
@@ -98,7 +98,7 @@ let PLUGIN_INFO =
     listbox#keysnail-completion-list listheader,                                                                 \
     #keysnail-twitter-client-user-tweet                                                                          \
     {                                                                                                            \
-        font-size : 110% !important;                                                                             \
+        font-size : 130% !important;                                                                             \
     }                                                                                                            \
                                                                                                                  \
     /* charm */                                                                                                  \
@@ -184,7 +184,7 @@ let PLUGIN_INFO =
                                                                                                                  \
     /* Header Cell */                                                                                            \
     listbox#keysnail-completion-list listheader {                                                                \
-        font-weight               : bold                      !important;                                        \
+        font-weight               : normal                      !important;                                        \
         color                     : %FG_HEADER%               !important;                                        \
     }                                                                                                            \
                                                                                                                  \
