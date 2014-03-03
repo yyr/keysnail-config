@@ -7,10 +7,6 @@
 // Put your codes here
 // Exts {{ ================================================================== //
 
-ext.add("markdown", display.echoStatusBar("markdown-toggle: C-M", 5000), "markdown-toggle: C-M");
-
-plugins.options["bmany.default_open_type"] = "tab";
-
 plugins.options["tanything_opt.keymap"] = {
     "C-z"   : "prompt-toggle-edit-mode",
     "SPC"   : "prompt-next-page",
@@ -21,7 +17,7 @@ plugins.options["tanything_opt.keymap"] = {
     "G"     : "prompt-end-of-candidates",
     "D"     : "prompt-cancel",
     // Tanything specific actions
-    "O"     : "localOpen",
+    "o"     : "localOpen",
     "q"     : "localClose",
     "p"     : "localLeftclose",
     "n"     : "localRightclose",
@@ -29,13 +25,168 @@ plugins.options["tanything_opt.keymap"] = {
     "d"     : "localDomainclose",
     "c"     : "localClipUT",
     "C"     : "localClipU",
-    "e"     : "localMovetoend"
+    "e"     : "localMovetoend",
+    "p"     : "localTogglePin"
 };
+
+
+// key.setGlobalKey(['C-x', '0'], function (ev, arg) {
+//   SplitBrowser.activeBrowserCloseWindow();
+// }, '現在のフレームを閉じる');
+ 
+// key.setGlobalKey(['C-x', '1'], function (ev, arg) {
+//   var url = SplitBrowser.activeBrowser != gBrowser ? SplitBrowser.activeSubBrowser.src : null;
+ 
+//   var browsers = SplitBrowser.browsers;
+//   for (var i = 0; i < browsers.length; ++i)
+//     browsers[i].close();
+  
+//   if (url) window.loadURI(url);
+// }, '現在のフレームだけを表示');
+
+// key.setGlobalKey(['C-x', '2'], function (ev, arg) {
+//   SplitBrowser.addSubBrowser(window.content.location.href,
+//                              SplitBrowser.activeSubBrowser,
+//                              SplitBrowser.POSITION_BOTTOM);
+// }, 'フレームを横に分割');
+
+// key.setGlobalKey(['C-x', '3'], function (ev, arg) {
+//   SplitBrowser.addSubBrowser(window.content.location.href,
+//                              SplitBrowser.activeSubBrowser,
+//                              SplitBrowser.POSITION_RIGHT);
+// }, 'フレームを縦に分割');
+
+// key.setGlobalKey(['C-x', 'k'], function (ev, arg) {
+//   var b = SplitBrowser.activeBrowser;
+//   if (b.mTabs.length > 1) {
+//     b.removeTab(b.mCurrentTab);
+//   } else if (b === gBrowser) {
+//     gBrowser.removeTab(gBrowser.mCurrentTab);
+//   }
+// }, '現在のタブを閉じる');
+
+// key.setGlobalKey(['C-x', 'o'], function (ev, arg) {
+//   function focusSubBrowserById(aId) {
+//     SplitBrowser.getSubBrowserById(aId).browser.contentWindow.focus();
+//   }
+  
+//   var browsers = SplitBrowser.browsers;
+  
+//   if (SplitBrowser.activeBrowser === gBrowser) {
+//     focusSubBrowserById(browsers[(arg == null) ? 0 : browsers.length - 1].id);
+//     return;
+//   }
+  
+//   var id = SplitBrowser.activeSubBrowser.id;
+  
+//   for (var i = 0; i < browsers.length; i++) {
+//     if (browsers[i].id == id)
+//       break;
+//   }
+  
+//   var nextIndex = (arg == null) ? i + 1 : i - 1;
+//   if (nextIndex >= browsers.length || nextIndex < 0)
+//     gBrowser.contentWindow.focus();
+//   else
+//     focusSubBrowserById(browsers[nextIndex].id);
+// }
+//                  , '次のフレームを選択', true);
+
+prompt.rows = 12;
+prompt.useMigemo = false;
+prompt.migemoMinWordLength = 2;
+prompt.displayDelayTime = 50;
+command.kill.killRingMax = 50;
+command.kill.textLengthMax = 8192;
+
+
+// stop searching by hit Enter on search box
+function emacslike_search(ev){
+    if(ev.ctrlKey && ev.charCode == 115){ // C-s
+        gFindBar.onFindAgainCommand(false);
+    }
+    if(ev.keyCode == 13){ // Enter
+        gFindBar.onFindAgainCommand(true);
+        gFindBar.close();
+    }
+    //TODO: save searching start point and back to it when searching is finished with C-g
+}
+
+if ('gFindBar' in window) {
+    gFindBar.getElement("findbar-textbox")
+        .addEventListener("keypress", emacslike_search, false);
+}
+
+
+ext.add("list-closed-tabs", function () {
+    const fav = "chrome://mozapps/skin/places/defaultFavicon.png";
+    var ss   = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
+    var json = Cc["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);
+    var closedTabs = [[tab.image || fav, tab.title] for each (tab in json.decode(ss.getClosedTabData(window)))];
+
+    if (!closedTabs.length)
+        return void display.echoStatusBar("No closed tabs", 2000);
+
+    prompt.selector(
+        {
+            message    : "select tab to undo:",
+            collection : closedTabs,
+            flags      : [ICON | IGNORE, 0],
+            callback   : function (i) { if (i >= 0) window.undoCloseTab(i); }
+        });
+}, "List closed tabs");
+
+plugins.options["hok.hint_base_style"] = {
+  position : 'absolute',
+  zIndex : '2147483647',
+  color : '#000',
+  fontSize : '14px',
+  fontFamily : 'monaco',
+  fontWeight : 'bold',
+  lineHeight : '14px',
+  padding : '2px',
+  margin : '0px',
+  textTransform : 'lowercase'
+};
+
+plugins.options["hok.hint_color_link"] = 'rgba(255, 230, 0, 1)';
+plugins.options["hok.hint_color_form"] = 'rgba(157, 82, 255, 1)';
+plugins.options["hok.hint_color_focused"] = 'rgba(255, 0, 255, 1)';
+plugins.options["hok.hint_color_candidates"] = 'rgba(255, 100, 255, 1)';
+
+plugins.options['hok.selector'] = 'a, input:not([type="hidden"]), textarea, iframe, area, select, button, embed, *[onclick], *[onmouseover], *[onmousedown], *[onmouseup], *[oncommand], *[role="link"], *[role="button"]';
+
+
+
+// ext.add("markdown", display.echoStatusBar("markdown-toggle: C-M", 5000), "markdown-toggle: C-M");
+
+plugins.options["bmany.default_open_type"] = "tab";
+
+// plugins.options["tanything_opt.keymap"] = {
+//     "C-z"   : "prompt-toggle-edit-mode",
+//     "SPC"   : "prompt-next-page",
+//     "b"     : "prompt-previous-page",
+//     "j"     : "prompt-next-completion",
+//     "k"     : "prompt-previous-completion",
+//     "g"     : "prompt-beginning-of-candidates",
+//     "G"     : "prompt-end-of-candidates",
+//     "D"     : "prompt-cancel",
+//     // Tanything specific actions
+//     "O"     : "localOpen",
+//     "q"     : "localClose",
+//     "p"     : "localLeftclose",
+//     "n"     : "localRightclose",
+//     "a"     : "localAllclose",
+//     "d"     : "localDomainclose",
+//     "c"     : "localClipUT",
+//     "C"     : "localClipU",
+//     "e"     : "localMovetoend"
+// };
 
 
 
 // }} ======================================================================= //
-plugins.options["hok.hint_keys"] = "uiopjkl;mn";
+plugins.options["hok.hint_keys"] = "huiopjklmn";
 //}}%PRESERVE%
 // ========================================================================= //
 
@@ -93,26 +244,10 @@ key.setGlobalKey('M-x', function (ev, arg) {
   ext.select(arg, ev);
 }, 'List exts and execute selected one', true);
 
-key.setGlobalKey('M-:', function (ev) {
-  command.interpreter();
-}, 'Command interpreter', true);
-
-key.setGlobalKey(['<f1>', 'b'], function (ev) {
-  key.listKeyBindings();
-}, 'List all keybindings');
-
-key.setGlobalKey(['<f1>', 'F'], function (ev) {
-  openHelpLink("firefox-help");
-}, 'Display Firefox help');
-
 key.setGlobalKey([['C-m'], ['M-j']], function (ev) {
   BrowserBack();
 }, 'Back');
 
-key.setGlobalKey(['C-x', '0'], function (ev) {
-  FullZoom.reset();
-  display.echoStatusBar("reset zoom!", 2000);
-}, 'Reset text size');
 
 key.setGlobalKey(['C-x', '1'], function (ev) {
   window.loadURI(ev.target.ownerDocument.location.href);
@@ -192,16 +327,13 @@ key.setGlobalKey(['C-x', 'f'], function (ev, arg) {
   ext.exec('history-show', arg, ev);
 }, 'History - Show reading list', true);
 
-key.setGlobalKey(['C-x', 'n'], function (ev, arg) {
-  OpenBrowserWindow();
-}, 'Open new window');
-
 key.setGlobalKey(['C-x', 'C-n'], function (ev, arg) {
   OpenBrowserWindow();
 }, 'convert tab to window');
 
 key.setGlobalKey(['C-x', 'b'], function (ev, arg) {
   ext.exec('tanything', arg, ev);
+  
 }, 'view all tabs ', true);
 
 key.setGlobalKey(['C-x', 'y'], function (ev, arg) {
@@ -219,6 +351,11 @@ key.setGlobalKey(['C-c', 'C-c', 'C-c'], function (ev) {
 key.setGlobalKey(['C-c', 'i'], function (ev, arg) {
   //stolen from keysnail's vi-style configuration
   util.setBoolPref("accessibility.browsewithcaret", !util.getBoolPref("accessibility.browsewithcaret"));
+  if (util.isCaretEnabled()) {
+    display.echoStatusBar("caret on!", 6000);
+  } else {
+    display.echoStatusBar("caret off!", 6000);
+  }
 }, 'Enter caret mode');
 
 key.setGlobalKey('M-w', function (ev) {
@@ -578,4 +715,36 @@ key.setCaretKey('M-n', function (ev) {
 key.setGlobalKey('M-e', function (ev, arg) {
     ext.exec('hok-start-extended-mode', arg, ev);
 }, 'Start Hit a Hint extended mode', true);
+
+key.setGlobalKey('C-l', function (ev, arg) {
+    ext.exec("tanything", arg, ev);
+}, 'view all tabs ', true);
+
+key.setGlobalKey(['C-x', 'n'], function (ev, arg) {
+  OpenBrowserWindow();
+}, 'Open new window');
+
+key.setGlobalKey(['C-x', 'l'], function (ev) {
+    command.focusToById("urlbar");
+}, 'Focus to the location bar', true);
+
+// key.setGlobalKey(['C-x', '0'], function (ev, arg) {
+//     ext.exec("delete-window", arg, ev);
+// }, 'Close current active "window" (Fox Splitter addon)');
+
+// key.setGlobalKey(['C-x', '1'], function (ev, arg) {
+//     ext.exec("delete-other-windows", arg, ev);
+// }, 'close-other-window (Fox Splitter addon)');
+
+// key.setGlobalKey(['C-x', '2'], function (ev, arg) {
+//     ext.exec("split-window-below", arg, ev);
+// }, 'split-window-below (Fox Splitter addon)');
+
+// key.setGlobalKey(['C-x', '3'], function (ev, arg) {
+//     ext.exec("split-window-right", arg, ev);
+// }, 'split-window-right (Fox Splitter addon)');
+
+// key.setGlobalKey(['C-x', 'k'], function (ev) {
+//     ext.exec("delete-window", arg, ev);
+// }, 'Close tab (or \'window\', if Fox Splitter addon installed)');
 
