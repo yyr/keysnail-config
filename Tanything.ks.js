@@ -125,6 +125,15 @@ var tanything =
              [function (aIndex) {
                   if (aIndex >= 0) open(aIndex);
               }, M({ja: "このタブを開く : ", en: ""}) + "open tab", "localOpen,c"],
+
+             [function (aIndex) {
+                  if (aIndex >= 0) openBelow(aIndex);
+              }, M({ja: "このタブを開く : ", en: ""}) + "open tab below", "localOpenbelow,c"],
+
+             [function (aIndex) {
+                  if (aIndex >= 0) openRight(aIndex);
+              }, M({ja: "このタブを開く : ", en: ""}) + "open tab right", "localOpenright,c"],
+      
              [function (aIndex) {
                   if (aIndex >= 0) close(aIndex);
               }, M({ja: "このタブを閉じる : ", en: ""}) + "close tab", "localClose,c"],
@@ -186,7 +195,7 @@ var tanything =
                  initialIndex        : gBrowser.mTabContainer.selectedIndex,
                  flags               : [ICON | IGNORE, 0, 0, IGNORE | HIDDEN],
                  collection          : currentCollection,
-                 header              : ["title", "url"],
+                 // header              : ["title", "url"],
                  keymap              : pOptions.keymap,
                  actions             : tanythingAction,
                  supressRecoverFocus : true,
@@ -213,6 +222,27 @@ var tanything =
              gBrowser.mTabContainer.selectedIndex = aIndex;
          }
 
+         function openBelow(aIndex) {
+             let row   = currentCollection[aIndex];
+             let uri   = row[2];
+             let title = row[1];
+             
+             tileTabs.menuActions('tilenew-below',null);
+             tileTabs.menuActions('activate-below',null);
+             loadURI(uri);
+         }
+
+         function openRight(aIndex) {
+             let row   = currentCollection[aIndex];
+             let uri   = row[2];
+             let title = row[1];
+             
+             tileTabs.menuActions('tilenew-right',null);
+             tileTabs.menuActions('activate-right',null);
+             loadURI(uri);
+         }
+
+      
          function close(aIndex) {
              if (currentCollection.length === 1)
              {
