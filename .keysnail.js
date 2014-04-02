@@ -184,18 +184,20 @@ key.setGlobalKey(['C-x', 'K'], function (ev) {
   closeWindow(true);
 }, 'Close the window');
 
-key.setGlobalKey(['C-x', 'C-u'], function (ev) {
+key.setGlobalKey(['C-x', 'C-u'],  function (ev, arg) {
+  let (elem = document.commandDispatcher.focusedElement) elem && elem.blur();
+  gBrowser.focus();
+  content.focus();
   ext.exec('list-closed-tabs', ev);
-  // undoCloseTab();
 }, 'Undo closed tab');
 
 key.setGlobalKey(['C-x', 'C-c'], function (ev) {
   goQuitApplication();
 }, 'Exit Firefox', true);
 
-key.setGlobalKey(['C-x', 'C-f'], function (ev) {
-  BrowserOpenFileWindow();
-}, 'Open the local file', true);
+// key.setGlobalKey(['C-x', 'C-f'], function (ev) {
+//   BrowserOpenFileWindow();
+// }, 'Open the local file', true);
 
 key.setGlobalKey(['C-x', 'C-s'], function (ev, arg) {
   ext.exec('ril-open-text', arg, ev);
@@ -231,7 +233,7 @@ key.setGlobalKey(['C-x', 'e'], function (ev, arg) {
     ext.exec('edit_text', arg, ev);
 }, 'edit by external editor', true);
 
-key.setGlobalKey(['C-x', 'C-f'], function (ev, arg) {
+key.setGlobalKey(['C-x', 'f'], function (ev, arg) {
   ext.exec('history-show', arg, ev);
 }, 'History - Show reading list', true);
 
@@ -645,7 +647,7 @@ key.setGlobalKey('M-p', function (ev, arg) {
   ext.exec("hok-start-extended-mode", aArg);
 }, 'Start Hit a Hint foreground mode', true);
 
-key.setGlobalKey('M-j', function (ev) {
+key.setGlobalKey('M-h', function (ev) {
     getBrowser().mTabContainer.advanceSelectedTab(-1, true);    
   // selectedTabIndex = _.indexOf(gBrowser.tabs, gBrowser.selectedTab)
   // if (selectedTabIndex === 0) {
